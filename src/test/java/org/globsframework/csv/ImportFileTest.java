@@ -175,7 +175,7 @@ public class ImportFileTest {
             }, Type.TYPE);
             fail();
         } catch (Exception e) {
-            Assert.assertTrue(e.getCause().getMessage().contains("line 2"));
+            Assert.assertTrue(e.getCause().getMessage().contains("line: 2"));
         }
     }
 
