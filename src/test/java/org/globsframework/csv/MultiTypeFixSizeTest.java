@@ -1,13 +1,16 @@
 package org.globsframework.csv;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
 import org.globsframework.core.metamodel.annotations.Target;
 import org.globsframework.core.metamodel.fields.GlobArrayField;
 import org.globsframework.core.metamodel.fields.GlobField;
 import org.globsframework.core.metamodel.fields.StringField;
+import org.globsframework.core.metamodel.impl.DefaultGlobTypeBuilder;
 import org.globsframework.core.model.Glob;
+import org.globsframework.csv.annotation.CsvHeader;
 import org.globsframework.csv.annotation.CsvHeader_;
+import org.globsframework.csv.annotation.ExportColumnSize;
 import org.globsframework.csv.annotation.ExportColumnSize_;
 import org.junit.Assert;
 import org.junit.Test;
@@ -62,20 +65,23 @@ public class MultiTypeFixSizeTest {
 
 
     public static class Root {
-        public static GlobType TYPE;
+        public static final GlobType TYPE;
 
         @Target(TypeA.class)
         @CsvHeader_("TYPE_A")
         @ExportColumnSize_(6)
-        public static GlobField typeA;
+        public static final GlobField typeA;
 
         @Target(TypeB.class)
         @CsvHeader_("TYPE_B")
         @ExportColumnSize_(6)
-        public static GlobArrayField typeB;
+        public static final GlobArrayField typeB;
 
         static {
-            GlobTypeLoaderFactory.create(Root.class).load();
+            GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("Root");
+            typeA = typeBuilder.declareGlobField("typeA", () -> TypeA.TYPE, CsvHeader.create("TYPE_A"), ExportColumnSize.create(6));
+            typeB = typeBuilder.declareGlobArrayField("typeB", () -> TypeB.TYPE, CsvHeader.create("TYPE_B"), ExportColumnSize.create(6));
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -89,21 +95,27 @@ public class MultiTypeFixSizeTest {
         public static StringField val2;
 
         static {
-            GlobTypeLoaderFactory.create(TypeA.class).load();
+            GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("TypeA");
+            typeBuilder.declareStringField("val1", ExportColumnSize.create(3));
+            typeBuilder.declareStringField("val2", ExportColumnSize.create(3));
+            TYPE = typeBuilder.build();
         }
     }
 
     public static class TypeB {
-        public static GlobType TYPE;
+        public static final GlobType TYPE;
 
         @ExportColumnSize_(4)
-        public static StringField val1;
+        public static final StringField val1;
 
         @ExportColumnSize_(4)
-        public static StringField val2;
+        public static final StringField val2;
 
         static {
-            GlobTypeLoaderFactory.create(TypeB.class).load();
+            GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("TypeB");
+            val1 = typeBuilder.declareStringField("val1", ExportColumnSize.create(4));
+            val2 = typeBuilder.declareStringField("val2", ExportColumnSize.create(4));
+            TYPE = typeBuilder.build();
         }
     }
 }

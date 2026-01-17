@@ -49,6 +49,7 @@ public class ImportFile {
     private boolean isExcel;
     private Pattern filterLine;
     private String defaultGlobTypeName = "DefaultCsv";
+    private HeaderToField headerResolver;
 
     public static InputStreamReader createReaderWithBomCheck(InputStream inputStream, Charset defaultCharset) throws IOException {
         BOMInputStream in = new BOMInputStream(inputStream, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE, ByteOrderMark.UTF_16BE,
@@ -147,7 +148,7 @@ public class ImportFile {
         for (String s1 : headerMap.keySet()) {
             globTypeBuilder.declareStringField(s1);
         }
-        return globTypeBuilder.get();
+        return globTypeBuilder.build();
     }
 
     private static String getValue(CsvLine record, int index, boolean trim) {
@@ -203,6 +204,11 @@ public class ImportFile {
 
     public ImportFile withNameFrom(String name) {
         this.reNameFrom = name;
+        return this;
+    }
+
+    public ImportFile withHeaderResolver(HeaderToField headerResolver){
+        this.headerResolver = headerResolver;
         return this;
     }
 
@@ -262,7 +268,7 @@ public class ImportFile {
 
 
     public Importer createExcel(InputStream inputStream, GlobType globType) throws IOException {
-        final DefaultDataRead dataRead = new DefaultDataRead(loadExcel(inputStream), trim, reNameFrom);
+        final DefaultDataRead dataRead = new DefaultDataRead(loadExcel(inputStream), trim, reNameFrom, headerResolver);
         if (globType == null) {
             globType = dataRead.createDefault(defaultGlobTypeName);
         }
@@ -281,7 +287,7 @@ public class ImportFile {
         } else {
             parse = readFix(reader, globType);
         }
-        DefaultDataRead dataRead = new DefaultDataRead(parse, trim, reNameFrom);
+        DefaultDataRead dataRead = new DefaultDataRead(parse, trim, reNameFrom, headerResolver);
         if (globType == null) {
             globType = dataRead.createDefault(defaultGlobTypeName);
         }
@@ -543,7 +549,7 @@ public class ImportFile {
     }
 
     public DataRead getDataReader(InputStream inputStream) throws IOException {
-        return new DefaultDataRead(load(createReaderFromStream(inputStream)), trim, reNameFrom);
+        return new DefaultDataRead(load(createReaderFromStream(inputStream)), trim, reNameFrom, headerResolver);
     }
 
     private CsvDocument loadExcel(InputStream inputStream) {
@@ -650,14 +656,16 @@ public class ImportFile {
 
     static class DefaultDataRead implements DataRead {
         private final String reNameFrom;
+        private final HeaderToField headerResolver;
         private CsvDocument parse;
         private boolean trim;
         private int countLine = 0;
 
-        public DefaultDataRead(CsvDocument parse, boolean trim, String reNameFrom) {
+        public DefaultDataRead(CsvDocument parse, boolean trim, String reNameFrom, HeaderToField headerResolver) {
             this.parse = parse;
             this.trim = trim;
             this.reNameFrom = reNameFrom;
+            this.headerResolver = headerResolver;
         }
 
         GlobType createDefault(String defaultGlobTypeName) {
@@ -666,7 +674,7 @@ public class ImportFile {
             for (String s1 : headerMap.keySet()) {
                 globTypeBuilder.declareStringField(s1);
             }
-            return globTypeBuilder.get();
+            return globTypeBuilder.build();
         }
 
         public void read(Consumer<Glob> consumer, GlobType globType) {
@@ -674,7 +682,13 @@ public class ImportFile {
             RemapName remapName = new RemapName(globType, reNameFrom);
             Map<String, Integer> headerMap = parse.getHeader();
             for (Map.Entry<String, Integer> stringIntegerEntry : headerMap.entrySet()) {
-                Field field = remapName.headNameToField.get(stringIntegerEntry.getKey());
+                Field field = null;
+                if (headerResolver != null) {
+                    field = headerResolver.getField(stringIntegerEntry.getKey());
+                }
+                if (field == null) {
+                    field = remapName.headNameToField.get(stringIntegerEntry.getKey());
+                }
                 if (field == null) {
                     field = findField(globType, stringIntegerEntry.getKey());
                 }
@@ -1303,7 +1317,13 @@ public class ImportFile {
                 DefaultDataRead.RemapName remapName = new DefaultDataRead.RemapName(targetType, reNameFrom);
                 for (int i = 1; i < record.size(); i++) {
                     String key = record.getAt(i);
-                    Field field = remapName.headNameToField.get(key);
+                    Field field = null;
+                    if (headerResolver != null) {
+                        field = headerResolver.getField(key);
+                    }
+                    if (field == null) {
+                        field = remapName.headNameToField.get(key);
+                    }
                     if (field == null) {
                         field = findField(targetType, key);
                     }

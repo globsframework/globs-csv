@@ -6,8 +6,10 @@ import org.globsframework.core.metamodel.annotations.GlobCreateFromAnnotation;
 import org.globsframework.core.metamodel.annotations.InitUniqueKey;
 import org.globsframework.core.metamodel.fields.StringArrayField;
 import org.globsframework.core.metamodel.impl.DefaultGlobTypeBuilder;
+import org.globsframework.core.model.Glob;
 import org.globsframework.core.model.Key;
 import org.globsframework.core.model.KeyBuilder;
+import org.globsframework.core.model.MutableGlob;
 
 public class NamedExport {
     public static final GlobType TYPE;
@@ -19,17 +21,18 @@ public class NamedExport {
 
     static {
         GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("NamedExport");
-        TYPE = typeBuilder.unCompleteType();
         names = typeBuilder.declareStringArrayField("names");
-        typeBuilder.register(GlobCreateFromAnnotation.class, annotation -> TYPE.instantiate()
-                .set(names, ((NamedExport_) annotation).value())
-        );
-        typeBuilder.complete();
+        typeBuilder.register(GlobCreateFromAnnotation.class, annotation -> getMutableGlob((NamedExport_) annotation));
+        TYPE = typeBuilder.build();
         KEY = KeyBuilder.newEmptyKey(TYPE);
-//        GlobTypeLoaderFactory.create(NamedExport.class, "NamedExport")
-//                .register(GlobCreateFromAnnotation.class, annotation -> TYPE.instantiate()
-//                        .set(names, ((NamedExport_) annotation).value())
-//                )
-//                .load();
+    }
+
+    private static MutableGlob getMutableGlob(NamedExport_ annotation) {
+        return TYPE.instantiate()
+                .set(names, annotation.value());
+    }
+
+    public static Glob create(String ...names) {
+        return TYPE.instantiate().set(NamedExport.names, names);
     }
 }

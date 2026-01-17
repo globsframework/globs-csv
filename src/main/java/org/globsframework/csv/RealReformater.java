@@ -72,7 +72,7 @@ public class RealReformater implements Reformater {
                 onSum(fromType, from, str);
             }
         }
-        resultType = outTypeBuilder.get();
+        resultType = outTypeBuilder.build();
     }
 
     private void onFrom(GlobType fromType, Glob from, StringField str) {

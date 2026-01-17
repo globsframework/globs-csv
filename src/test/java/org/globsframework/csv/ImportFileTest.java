@@ -1,14 +1,12 @@
 package org.globsframework.csv;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.annotations.FieldName_;
 import org.globsframework.core.metamodel.fields.*;
 import org.globsframework.core.model.Glob;
-import org.globsframework.csv.annotation.ExportDateFormat_;
-import org.globsframework.csv.annotation.ImportEmptyStringHasEmptyStringFormat_;
-import org.globsframework.csv.annotation.ReNamedExport_;
-import org.globsframework.csv.annotation.ReNamedMappingExport_;
+import org.globsframework.csv.annotation.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,15 +33,15 @@ public class ImportFileTest {
         List<Glob> imports = new ArrayList<>();
         importFile.importContent(new StringReader(
                 "PRODUCT_ID,sku\n" +
-                        "1,\"REF_1\"\n" +
-                        " 2 ,\"REF_2\"\n" +
-                        "\"3\",\"REF_3\"\n" +
-                        "\"4  \",\"REF_4\"\n" +
-                        "\"5  \",\"\"\n" +
-                        "\"6  \",\\,\n" +
-                        "\"7  \",\n" +
-                        "\n" +
-                        ""
+                "1,\"REF_1\"\n" +
+                " 2 ,\"REF_2\"\n" +
+                "\"3\",\"REF_3\"\n" +
+                "\"4  \",\"REF_4\"\n" +
+                "\"5  \",\"\"\n" +
+                "\"6  \",\\,\n" +
+                "\"7  \",\n" +
+                "\n" +
+                ""
         ), new Consumer<Glob>() {
             public void accept(Glob glob) {
                 imports.add(glob);
@@ -114,9 +112,9 @@ public class ImportFileTest {
         List<Glob> imports = new ArrayList<>();
         importFile.importContent(new StringReader(
                 "PRODUCT_ID,sku\n" +
-                        "1,\"REF on \n multiples line_1\"\n" +
-                        "\"4  \",\"REF_4\"\n" +
-                        ""
+                "1,\"REF on \n multiples line_1\"\n" +
+                "\"4  \",\"REF_4\"\n" +
+                ""
         ), new Consumer<Glob>() {
             public void accept(Glob glob) {
                 imports.add(glob);
@@ -139,9 +137,9 @@ public class ImportFileTest {
         List<Glob> imports = new ArrayList<>();
         importFile.importContent(new StringReader(
                 "PRODUCT_ID,sku\n" +
-                        "1,\"REF on \\\"a quoted text\\\"\"\n" +
-                        "\"4  \",\"REF_4\"\n" +
-                        ""
+                "1,\"REF on \\\"a quoted text\\\"\"\n" +
+                "\"4  \",\"REF_4\"\n" +
+                ""
         ), new Consumer<Glob>() {
             public void accept(Glob glob) {
                 imports.add(glob);
@@ -165,9 +163,9 @@ public class ImportFileTest {
         try {
             importFile.importContent(new StringReader(
                     "PRODUCT_ID,sku\n" +
-                            "1,\"REF on \"a badly quoted text\"\"\n" +
-                            "\"4  \",\"REF_4\"\n" +
-                            ""
+                    "1,\"REF on \"a badly quoted text\"\"\n" +
+                    "\"4  \",\"REF_4\"\n" +
+                    ""
             ), new Consumer<Glob>() {
                 public void accept(Glob glob) {
                     imports.add(glob);
@@ -187,8 +185,8 @@ public class ImportFileTest {
         List<Glob> imports = new ArrayList<>();
         ImportFile.Importer importer = importFile.create(new StringReader(
                 "PRODUCT_ID,sku\n" +
-                        "1,\"REF_1\"\n" +
-                        ""
+                "1,\"REF_1\"\n" +
+                ""
         ));
 
         GlobType type = importer.getType();
@@ -217,8 +215,8 @@ public class ImportFileTest {
         List<Glob> imports = new ArrayList<>();
         ImportFile.Importer importer = importFile.create(new StringReader(
                 "PRODUCT_ID,sku\n" +
-                        "1,\"REF_1\"\n" +
-                        ""
+                "1,\"REF_1\"\n" +
+                ""
         ));
 
         GlobType type = importer.getType();
@@ -263,8 +261,8 @@ public class ImportFileTest {
         List<Glob> imports = new ArrayList<>();
         importFile.importContent(new StringReader(
                 "PRODUCT_ID,sku\n" +
-                        "1,\"REF_1\"\n" +
-                        ""
+                "1,\"REF_1\"\n" +
+                ""
         ), new Consumer<Glob>() {
             public void accept(Glob glob) {
                 imports.add(glob);
@@ -285,7 +283,7 @@ public class ImportFileTest {
         importFile.withHeader("PRODUCT_ID,sku");
         importFile.importContent(new StringReader(
                 "1,\"REF_1\"\n" +
-                        ""
+                ""
         ), new Consumer<Glob>() {
             public void accept(Glob glob) {
                 imports.add(glob);
@@ -304,7 +302,7 @@ public class ImportFileTest {
         List<Glob> imports = new ArrayList<>();
         importFile.importContent(new StringReader(
                 "PRODUCT_ID,date,dateTime,dateTimeWithoutTime\n" +
-                        "1,20201130,20201130 223200,20201130\n"
+                "1,20201130,20201130 223200,20201130\n"
         ), new Consumer<Glob>() {
             public void accept(Glob glob) {
                 imports.add(glob);
@@ -364,7 +362,7 @@ public class ImportFileTest {
         List<Glob> imports = new ArrayList<>();
         importFile.importContent(new StringReader(
                 "aa,cc,dd\n" +
-                        "AZE,EZA,QDS\n"
+                "AZE,EZA,QDS\n"
         ), new Consumer<Glob>() {
             public void accept(Glob glob) {
                 imports.add(glob);
@@ -436,7 +434,14 @@ public class ImportFileTest {
         public static StringField NUM_COLIS;
 
         static {
-            GlobTypeLoaderFactory.create(BigLine.class).load();
+            GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("BigLine");
+            CODE_ART = typeBuilder.declareStringField("CODE_ART");
+            EAN = typeBuilder.declareStringField("EAN");
+            QTE_ATTENDUE = typeBuilder.declareStringField("QTE_ATTENDUE");
+            DATE_PREVUE = typeBuilder.declareStringField("DATE_PREVUE");
+            NUM_BL = typeBuilder.declareStringField("NUM_BL");
+            NUM_COLIS = typeBuilder.declareStringField("NUM_COLIS");
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -454,7 +459,11 @@ public class ImportFileTest {
         public static StringField d;
 
         static {
-            GlobTypeLoaderFactory.create(RenameTestType.class).load();
+            GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("RenameTestType");
+            a = typeBuilder.declareStringField("aa", ReNamedExport.create(ReNamedExport.Mapping.create("fi", "aa")));
+            b = typeBuilder.declareStringField("cc", ReNamedExport.create(ReNamedExport.Mapping.create("fi", "cc")));
+            d = typeBuilder.declareStringField("dd", ReNamedExport.create("dd"));
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -477,7 +486,13 @@ public class ImportFileTest {
         public static DateTimeField dateTimeWithoutTime;
 
         static {
-            GlobTypeLoaderFactory.create(Type.class, true).load();
+            GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Type");
+            ID = typeBuilder.declareIntegerField("PRODUCT_ID");
+            SKU = typeBuilder.declareStringField("sku", ImportEmptyStringHasEmptyStringFormat.TRUE);
+            date = typeBuilder.declareDateField("date", ExportDateFormat.create("yyyyMMdd"));
+            dateTime = typeBuilder.declareDateTimeField("dateTime", ExportDateFormat.create("yyyyMMdd HHmmss"));
+            dateTimeWithoutTime = typeBuilder.declareDateTimeField("dateTimeWithoutTime", ExportDateFormat.create("yyyyMMdd", "Europe/Paris"));
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -503,7 +518,9 @@ public class ImportFileTest {
         public static StringArrayField f1;
 
         static {
-            GlobTypeLoaderFactory.create(ObjectWithArray.class).load();
+            GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("ObjectWithArray");
+            f1 = typeBuilder.declareStringArrayField("f1");
+            TYPE = typeBuilder.build();
         }
     }
 

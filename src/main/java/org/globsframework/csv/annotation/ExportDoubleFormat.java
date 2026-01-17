@@ -8,6 +8,7 @@ import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.metamodel.impl.DefaultGlobTypeBuilder;
 import org.globsframework.core.model.Key;
 import org.globsframework.core.model.KeyBuilder;
+import org.globsframework.core.model.MutableGlob;
 
 public class ExportDoubleFormat {
     public static final GlobType TYPE;
@@ -21,17 +22,18 @@ public class ExportDoubleFormat {
 
     static {
         GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("ExportDoubleFormat");
-        TYPE = typeBuilder.unCompleteType();
         FORMAT = typeBuilder.declareStringField("format");
         DECIMAL_SEPARATOR = typeBuilder.declareStringField("decimalSeparator");
-        typeBuilder.register(GlobCreateFromAnnotation.class, annotation ->
-                TYPE.instantiate()
-                        .set(FORMAT, ((ExportDoubleFormat_) annotation).format())
-                        .set(DECIMAL_SEPARATOR, ((ExportDoubleFormat_) annotation).decimalSeparator())
+        typeBuilder.register(GlobCreateFromAnnotation.class,
+                annotation -> getMutableGlob((ExportDoubleFormat_) annotation)
         );
-        typeBuilder.complete();
+        TYPE = typeBuilder.build();
         KEY = KeyBuilder.newEmptyKey(TYPE);
-//        GlobTypeLoaderFactory.create(ExportDoubleFormat.class, "ExportDoubleFormat")
-//                .load();
+    }
+
+    private static MutableGlob getMutableGlob(ExportDoubleFormat_ annotation) {
+        return TYPE.instantiate()
+                .set(FORMAT, annotation.format())
+                .set(DECIMAL_SEPARATOR, annotation.decimalSeparator());
     }
 }

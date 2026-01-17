@@ -1,7 +1,8 @@
 package org.globsframework.csv;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.annotations.Target;
 import org.globsframework.core.metamodel.fields.GlobArrayField;
 import org.globsframework.core.metamodel.fields.GlobField;
@@ -23,9 +24,9 @@ public class ImportStructuredCsvTest {
     @Test
     public void name() throws IOException {
         String str = "a;b;c;dd\n" +
-                "aa;bb;aa;d\n" +
-                "aa;cc;\n" +
-                "bbb;bb;\n";
+                     "aa;bb;aa;d\n" +
+                     "aa;cc;\n" +
+                     "bbb;bb;\n";
 
         List<Glob> l = new ArrayList<>();
         Consumer<Glob> globConsumer = new Consumer<Glob>() {
@@ -115,9 +116,9 @@ public class ImportStructuredCsvTest {
     @Test
     public void simple() throws IOException {
         String str = "a;b;c;d;e\n" +
-                "aa;bb;aa;d;1\n" +
-                "aa;cc;2\n" +
-                "bbb;bb;;3\n";
+                     "aa;bb;aa;d;1\n" +
+                     "aa;cc;2\n" +
+                     "bbb;bb;;3\n";
 
         List<Glob> l = new ArrayList<>();
         Consumer<Glob> globConsumer = new Consumer<Glob>() {
@@ -144,7 +145,11 @@ public class ImportStructuredCsvTest {
         public static GlobField l4;
 
         static {
-            GlobTypeLoaderFactory.create(SimpleL1.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("SimpleL1");
+            a = builder.declareStringField("a");
+            b = builder.declareStringField("b");
+            l4 = builder.declareGlobField("l4", () -> L4.TYPE);
+            TYPE = builder.build();
         }
     }
 
@@ -158,7 +163,11 @@ public class ImportStructuredCsvTest {
         public static IntegerField e;
 
         static {
-            GlobTypeLoaderFactory.create(L4.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("L4");
+            c = builder.declareStringField("c");
+            d = builder.declareStringField("d");
+            e = builder.declareIntegerField("e");
+            TYPE = builder.build();
         }
     }
 
@@ -170,9 +179,11 @@ public class ImportStructuredCsvTest {
         @Target(L2.class)
         public static GlobArrayField l2;
 
-
         static {
-            GlobTypeLoaderFactory.create(L1.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("L1");
+            aa = builder.declareStringField("aa");
+            l2 = builder.declareGlobArrayField("l2", () -> L2.TYPE);
+            TYPE = builder.build();
         }
     }
 
@@ -186,9 +197,12 @@ public class ImportStructuredCsvTest {
         @Target(L3.class)
         public static GlobArrayField l3;
 
-
         static {
-            GlobTypeLoaderFactory.create(L2.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("L2");
+            bb = builder.declareStringField("bb");
+            cc = builder.declareStringField("cc");
+            l3 = builder.declareGlobArrayField("l3", () -> L3.TYPE);
+            TYPE = builder.build();
         }
     }
 
@@ -201,8 +215,12 @@ public class ImportStructuredCsvTest {
         public static StringField dd;
 
         static {
-            GlobTypeLoaderFactory.create(L3.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("L3");
+            aa = builder.declareStringField("aa");
+            bb = builder.declareStringField("bb");
+            cc = builder.declareStringField("cc");
+            dd = builder.declareStringField("dd");
+            TYPE = builder.build();
         }
     }
-
 }

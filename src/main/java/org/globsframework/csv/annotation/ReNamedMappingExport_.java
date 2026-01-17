@@ -13,5 +13,5 @@ public @interface ReNamedMappingExport_ {
 
     String to();
 
-    GlobType TYPE = NamedExport.TYPE;
+    GlobType TYPE = ReNamedExport.Mapping.TYPE;
 }

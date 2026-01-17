@@ -6,8 +6,10 @@ import org.globsframework.core.metamodel.annotations.GlobCreateFromAnnotation;
 import org.globsframework.core.metamodel.annotations.InitUniqueKey;
 import org.globsframework.core.metamodel.fields.IntegerField;
 import org.globsframework.core.metamodel.impl.DefaultGlobTypeBuilder;
+import org.globsframework.core.model.Glob;
 import org.globsframework.core.model.Key;
 import org.globsframework.core.model.KeyBuilder;
+import org.globsframework.core.model.MutableGlob;
 
 public class ExportColumnSize {
     public static final GlobType TYPE;
@@ -20,17 +22,19 @@ public class ExportColumnSize {
 
     static {
         GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("ExportColumnSize");
-        TYPE = typeBuilder.unCompleteType();
         SIZE = typeBuilder.declareIntegerField("size");
-        typeBuilder.register(GlobCreateFromAnnotation.class, annotation -> TYPE.instantiate()
-                .set(SIZE, ((ExportColumnSize_) annotation).value()));
-        typeBuilder.complete();
+        typeBuilder.register(GlobCreateFromAnnotation.class, annotation -> getMutableGlob((ExportColumnSize_) annotation));
+        TYPE = typeBuilder.build();
 
         KEY = KeyBuilder.newEmptyKey(TYPE);
+    }
 
-//        GlobTypeLoaderFactory.create(ExportColumnSize.class, "ExportColumnSize")
-//                .register(GlobCreateFromAnnotation.class, annotation -> TYPE.instantiate()
-//                        .set(SIZE, ((ExportColumnSize_) annotation).value()))
-//                .load();
+    private static MutableGlob getMutableGlob(ExportColumnSize_ annotation) {
+        return TYPE.instantiate()
+                .set(SIZE, annotation.value());
+    }
+
+    public static Glob create(int size) {
+        return TYPE.instantiate().set(SIZE, size);
     }
 }

@@ -6,8 +6,10 @@ import org.globsframework.core.metamodel.annotations.GlobCreateFromAnnotation;
 import org.globsframework.core.metamodel.annotations.InitUniqueKey;
 import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.metamodel.impl.DefaultGlobTypeBuilder;
+import org.globsframework.core.model.Glob;
 import org.globsframework.core.model.Key;
 import org.globsframework.core.model.KeyBuilder;
+import org.globsframework.core.model.MutableGlob;
 
 public class ExportDateFormat {
     public static final GlobType TYPE;
@@ -21,28 +23,26 @@ public class ExportDateFormat {
 
     static {
         GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("ExportDateFormat");
-        TYPE = typeBuilder.unCompleteType();
         FORMAT = typeBuilder.declareStringField("format");
         ZONE_ID = typeBuilder.declareStringField("zoneId");
-        typeBuilder
-                .register(GlobCreateFromAnnotation.class, annotation -> {
-                            String zoneId = ((ExportDateFormat_) annotation).zoneId();
-                            return TYPE.instantiate()
-                                    .set(FORMAT, ((ExportDateFormat_) annotation).value())
-                                    .set(ZONE_ID, zoneId.isEmpty() ? null : zoneId);
-                        }
-                );
-        typeBuilder.complete();
+        typeBuilder.register(GlobCreateFromAnnotation.class, annotation -> getMutableGlob((ExportDateFormat_) annotation));
+        TYPE = typeBuilder.build();
         KEY = KeyBuilder.newEmptyKey(TYPE);
+    }
 
-//        GlobTypeLoaderFactory.create(ExportDateFormat.class, "ExportDateFormat")
-//                .register(GlobCreateFromAnnotation.class, annotation -> {
-//                            String zoneId = ((ExportDateFormat_) annotation).zoneId();
-//                            return TYPE.instantiate()
-//                                    .set(FORMAT, ((ExportDateFormat_) annotation).value())
-//                                    .set(ZONE_ID, zoneId.isEmpty() ? null : zoneId);
-//                        }
-//                )
-//                .load();
+    private static MutableGlob getMutableGlob(ExportDateFormat_ annotation) {
+        String zoneId = annotation.zoneId();
+        return TYPE.instantiate()
+                .set(FORMAT, annotation.value())
+                .set(ZONE_ID, zoneId.isEmpty() ? null : zoneId);
+    }
+
+    public static Glob create(String format) {
+        return create(format, null);
+    }
+
+    public static Glob create(String format, String zoneId) {
+        return TYPE.instantiate().set(FORMAT, format)
+                .set(ZONE_ID, zoneId);
     }
 }

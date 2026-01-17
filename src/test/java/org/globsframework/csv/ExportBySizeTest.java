@@ -1,15 +1,15 @@
 package org.globsframework.csv;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
+import org.globsframework.core.metamodel.annotations.IsDate;
 import org.globsframework.core.metamodel.annotations.IsDate_;
 import org.globsframework.core.metamodel.fields.*;
 import org.globsframework.core.model.Glob;
 import org.globsframework.core.model.MutableGlob;
 import org.globsframework.core.utils.Ref;
-import org.globsframework.csv.annotation.ExportColumnSize_;
-import org.globsframework.csv.annotation.ExportDateFormat_;
-import org.globsframework.csv.annotation.NamedExport_;
+import org.globsframework.csv.annotation.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -193,7 +193,9 @@ public class ExportBySizeTest {
         public static StringArrayField names;
 
         static {
-            GlobTypeLoaderFactory.create(DataWithArray.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("DataWithArray");
+            names = builder.declareStringArrayField("names");
+            TYPE = builder.build();
         }
     }
 
@@ -268,7 +270,13 @@ public class ExportBySizeTest {
 
 
         static {
-            GlobTypeLoaderFactory.createAndLoad(Data.class, true);
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("Data");
+            NAME = builder.declareStringField("name", NamedExport.create("v1"), ExportColumnSize.create(10));
+            COUNT = builder.declareIntegerField("count", NamedExport.create("v2"), ExportColumnSize.create(6));
+            VALUE = builder.declareDoubleField("value", ExportColumnSize.create(12));
+            DATE_AS_INT = builder.declareIntegerField("dateAsInt", ExportColumnSize.create(10), ExportDateFormat.create("YYYY/MM/DD"), IsDate.UNIQUE);
+            DATE = builder.declareDateField("date", ExportDateFormat.create("YYYY/MM/DD"), ExportColumnSize.create(10));
+            TYPE = builder.build();
         }
     }
 }
