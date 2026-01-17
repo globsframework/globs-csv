@@ -2,7 +2,8 @@ package org.globsframework.csv;
 
 import junit.framework.TestCase;
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.model.Glob;
 import org.globsframework.csv.model.FieldMappingType;
@@ -95,7 +96,14 @@ public class ReformaterTest extends TestCase {
         public static StringField name;
 
         static {
-            GlobTypeLoaderFactory.create(L1.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("L1");
+            a = builder.declareStringField("a");
+            b = builder.declareStringField("b");
+            c = builder.declareStringField("c");
+            value1 = builder.declareStringField("value1");
+            value2 = builder.declareStringField("value2");
+            name = builder.declareStringField("name");
+            TYPE = builder.build();
         }
     }
 }

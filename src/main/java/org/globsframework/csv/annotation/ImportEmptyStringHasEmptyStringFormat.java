@@ -6,8 +6,10 @@ import org.globsframework.core.metamodel.annotations.GlobCreateFromAnnotation;
 import org.globsframework.core.metamodel.annotations.InitUniqueKey;
 import org.globsframework.core.metamodel.fields.BooleanField;
 import org.globsframework.core.metamodel.impl.DefaultGlobTypeBuilder;
+import org.globsframework.core.model.Glob;
 import org.globsframework.core.model.Key;
 import org.globsframework.core.model.KeyBuilder;
+import org.globsframework.core.model.MutableGlob;
 
 public class ImportEmptyStringHasEmptyStringFormat {
     public static final GlobType TYPE;
@@ -17,19 +19,23 @@ public class ImportEmptyStringHasEmptyStringFormat {
     @InitUniqueKey
     public static final Key KEY;
 
+    public static Glob TRUE;
+
+    public static Glob FALSE;
+
     static {
         GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("ImportEmptyStringHasEmptyStringFormat");
-        TYPE = typeBuilder.unCompleteType();
         EMPTY_STRING = typeBuilder.declareBooleanField("emptyString");
-        typeBuilder.register(GlobCreateFromAnnotation.class, annotation -> TYPE.instantiate()
-                .set(EMPTY_STRING, ((ImportEmptyStringHasEmptyStringFormat_) annotation).value())
-        );
-        typeBuilder.complete();
+        typeBuilder.register(GlobCreateFromAnnotation.class,
+                annotation -> getMutableGlob((ImportEmptyStringHasEmptyStringFormat_) annotation));
+        TYPE = typeBuilder.build();
+        TRUE = TYPE.instantiate().set(EMPTY_STRING, true);
+        FALSE = TYPE.instantiate().set(EMPTY_STRING, false);
         KEY = KeyBuilder.newEmptyKey(TYPE);
-//        GlobTypeLoaderFactory.create(ImportEmptyStringHasEmptyStringFormat.class, "ImportEmptyStringHasEmptyStringFormat")
-//                .register(GlobCreateFromAnnotation.class, annotation -> TYPE.instantiate()
-//                        .set(EMPTY_STRING, ((ImportEmptyStringHasEmptyStringFormat_) annotation).value())
-//                )
-//                .load();
+    }
+
+    private static MutableGlob getMutableGlob(ImportEmptyStringHasEmptyStringFormat_ annotation) {
+        return TYPE.instantiate()
+                .set(EMPTY_STRING, annotation.value());
     }
 }

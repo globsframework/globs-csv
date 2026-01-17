@@ -1,13 +1,15 @@
 package org.globsframework.csv;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.annotations.Target;
 import org.globsframework.core.metamodel.fields.GlobArrayField;
 import org.globsframework.core.metamodel.fields.GlobField;
 import org.globsframework.core.metamodel.fields.IntegerField;
 import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.model.Glob;
+import org.globsframework.csv.annotation.CsvHeader;
 import org.globsframework.csv.annotation.CsvHeader_;
 import org.junit.Assert;
 import org.junit.Test;
@@ -75,7 +77,11 @@ public class MixedTest {
         public static GlobField h3;
 
         static {
-            GlobTypeLoaderFactory.create(Root.class).load();
+            GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Root");
+            h1 = typeBuilder.declareGlobField("h1", () -> H1.TYPE, CsvHeader.create("H1"));
+            h2 = typeBuilder.declareGlobArrayField("h2", () -> H2.TYPE, CsvHeader.create("H2", true));
+            h3 = typeBuilder.declareGlobField("h3", () -> H3.TYPE, CsvHeader.create("H3"));
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -87,7 +93,10 @@ public class MixedTest {
         public static StringField valB;
 
         static {
-            GlobTypeLoaderFactory.create(H1.class).load();
+            GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("H1");
+            valA = typeBuilder.declareStringField("valA");
+            valB = typeBuilder.declareStringField("valB");
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -103,7 +112,12 @@ public class MixedTest {
         public static StringField C;
 
         static {
-            GlobTypeLoaderFactory.create(H2.class).load();
+            GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("H2");
+            D = typeBuilder.declareStringField("D");
+            E = typeBuilder.declareStringField("E");
+            F = typeBuilder.declareStringField("F");
+            C = typeBuilder.declareStringField("C");
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -115,7 +129,10 @@ public class MixedTest {
         public static StringField valB;
 
         static {
-            GlobTypeLoaderFactory.create(H3.class).load();
+            GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("H3");
+            valA = typeBuilder.declareStringField("valA");
+            valB = typeBuilder.declareStringField("valB");
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -136,7 +153,11 @@ public class MixedTest {
         public static GlobArrayField addresses;
 
         static {
-            GlobTypeLoaderFactory.create(CCMOrderType.class).load();
+            GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("CCMOrderType");
+            order = typeBuilder.declareGlobField("order", () -> CCMLineType.TYPE, CsvHeader.create("CCM"));
+            items = typeBuilder.declareGlobArrayField("items", () -> CCLLineType.TYPE, CsvHeader.create("CCL"));
+            addresses = typeBuilder.declareGlobArrayField("addresses", () -> ADRLineType.TYPE, CsvHeader.create("ADR"));
+            TYPE = typeBuilder.build();
         }
 
         public static class CCMLineType {
@@ -155,7 +176,19 @@ public class MixedTest {
             public static StringField GPA_PAYS;
 
             static {
-                GlobTypeLoaderFactory.create(CCMLineType.class).load();
+                GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("CCMLineType");
+                GP_REFINTERNE = typeBuilder.declareStringField("GP_REFINTERNE");
+                GP_DATEPIECE = typeBuilder.declareStringField("GP_DATEPIECE");
+                GP_TIERS = typeBuilder.declareStringField("GP_TIERS");
+                MEJ_CDEECOMENVOI = typeBuilder.declareStringField("MEJ_CDEECOMENVOI");
+                MEJ_CDEECOMETAB = typeBuilder.declareStringField("MEJ_CDEECOMETAB");
+                MEJ_CDEECOMSUIVI = typeBuilder.declareStringField("MEJ_CDEECOMSUIVI");
+                MEJ_CDEECOMREGLT = typeBuilder.declareStringField("MEJ_CDEECOMREGLT");
+                MEJ_CDEECOMFACT = typeBuilder.declareStringField("MEJ_CDEECOMFACT");
+                MEJ_CDEECOMEXPED = typeBuilder.declareStringField("MEJ_CDEECOMEXPED");
+                GP_ETABLISSEMENT = typeBuilder.declareStringField("GP_ETABLISSEMENT");
+                GPA_PAYS = typeBuilder.declareStringField("GPA_PAYS");
+                TYPE = typeBuilder.build();
             }
         }
 
@@ -174,7 +207,18 @@ public class MixedTest {
             public static StringField GL_DEVISE;
 
             static {
-                GlobTypeLoaderFactory.create(CCLLineType.class).load();
+                GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("CCLLineType");
+                GP_REFINTERNE = typeBuilder.declareStringField("GP_REFINTERNE");
+                GL_NUMLIGNE = typeBuilder.declareStringField("GL_NUMLIGNE");
+                CODEBARRE = typeBuilder.declareStringField("CODEBARRE");
+                SKU = typeBuilder.declareStringField("SKU");
+                GL_LIBELLE = typeBuilder.declareStringField("GL_LIBELLE");
+                GL_QTEFACT = typeBuilder.declareIntegerField("GL_QTEFACT");
+                GL_PUTTCNETDEV = typeBuilder.declareStringField("GL_PUTTCNETDEV");
+                GL_DEPOT = typeBuilder.declareStringField("GL_DEPOT");
+                GL_FAMILLETAXE1 = typeBuilder.declareStringField("GL_FAMILLETAXE1");
+                GL_DEVISE = typeBuilder.declareStringField("GL_DEVISE");
+                TYPE = typeBuilder.build();
             }
         }
 
@@ -196,7 +240,21 @@ public class MixedTest {
             public static StringField GPA_EMAIL;
 
             static {
-                GlobTypeLoaderFactory.create(ADRLineType.class).load();
+                GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("ADRLineType");
+                GP_REFINTERNE = typeBuilder.declareStringField("GP_REFINTERNE");
+                GPA_TYPEPIECEADR = typeBuilder.declareStringField("GPA_TYPEPIECEADR");
+                GPA_JURIDIQUE = typeBuilder.declareStringField("GPA_JURIDIQUE");
+                GPA_LIBELLE = typeBuilder.declareStringField("GPA_LIBELLE");
+                GPA_LIBELLE2 = typeBuilder.declareStringField("GPA_LIBELLE2");
+                GPA_ADRESSE1 = typeBuilder.declareStringField("GPA_ADRESSE1");
+                GPA_ADRESSE2 = typeBuilder.declareStringField("GPA_ADRESSE2");
+                GPA_ADRESSE3 = typeBuilder.declareStringField("GPA_ADRESSE3");
+                GPA_CODEPOSTAL = typeBuilder.declareStringField("GPA_CODEPOSTAL");
+                GPA_VILLE = typeBuilder.declareStringField("GPA_VILLE");
+                GPA_PAYS = typeBuilder.declareStringField("GPA_PAYS");
+                GPA_TELEPHONE = typeBuilder.declareStringField("GPA_TELEPHONE");
+                GPA_EMAIL = typeBuilder.declareStringField("GPA_EMAIL");
+                TYPE = typeBuilder.build();
             }
         }
     }

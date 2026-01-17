@@ -8,6 +8,7 @@ import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.metamodel.impl.DefaultGlobTypeBuilder;
 import org.globsframework.core.model.Key;
 import org.globsframework.core.model.KeyBuilder;
+import org.globsframework.core.model.MutableGlob;
 
 public class CsvSeparator {
     public static final GlobType TYPE;
@@ -20,16 +21,14 @@ public class CsvSeparator {
 
     static {
         GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("CsvSeparator");
-        TYPE = typeBuilder.unCompleteType();
         SEPARATOR = typeBuilder.declareStringField("separator");
-        typeBuilder.register(GlobCreateFromAnnotation.class, annotation -> TYPE.instantiate()
-                .set(SEPARATOR, new String(new char[]{((CsvSeparator_) annotation).value()})));
-        typeBuilder.complete();
+        typeBuilder.register(GlobCreateFromAnnotation.class, annotation -> getMutableGlob((CsvSeparator_) annotation));
+        TYPE = typeBuilder.build();
         KEY = KeyBuilder.newEmptyKey(TYPE);
+    }
 
-//        GlobTypeLoaderFactory.create(CsvSeparator.class, "CsvSeparator")
-//                .register(GlobCreateFromAnnotation.class, annotation -> TYPE.instantiate()
-//                        .set(SEPARATOR, new String(new char[]{((CsvSeparator_) annotation).value()})))
-//                .load();
+    private static MutableGlob getMutableGlob(CsvSeparator_ annotation) {
+        return TYPE.instantiate()
+                .set(SEPARATOR, new String(new char[]{annotation.value()}));
     }
 }

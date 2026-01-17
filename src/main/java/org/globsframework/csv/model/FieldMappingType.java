@@ -11,6 +11,7 @@ import org.globsframework.json.annottations.IsJsonContent;
 import org.globsframework.json.annottations.IsJsonContent_;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 public class FieldMappingType {
     public static final GlobType TYPE;
@@ -24,14 +25,12 @@ public class FieldMappingType {
 
     static {
         GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("FieldMapping");
-        TYPE = typeBuilder.unCompleteType();
         from = typeBuilder.declareGlobUnionField("from",
-                List.of(FromType.TYPE, TemplateType.TYPE, SumData.TYPE, OverrideData.TYPE, MappingData.TYPE, JoinType.TYPE));
+                new Supplier[]{() -> FromType.TYPE, () -> TemplateType.TYPE, () -> SumData.TYPE,
+                        () -> OverrideData.TYPE, () -> MappingData.TYPE, () -> JoinType.TYPE});
         to = typeBuilder.declareStringField("to");
         targetType = typeBuilder.declareStringField("targetType");
-        typeBuilder.complete();
-
-//        GlobTypeLoaderFactory.create(FieldMappingType.class).load();
+        TYPE = typeBuilder.build();
     }
 
 //  TODO   {a1,a2}{b}{c1,c2} => a1.b.c1, a1.b.c2, a1.b.c1, a1.b.c2
@@ -44,10 +43,8 @@ public class FieldMappingType {
 
         static {
             GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("SumData");
-            TYPE = typeBuilder.unCompleteType();
-            from = typeBuilder.declareGlobArrayField("from", FromType.TYPE);
-            typeBuilder.complete();
-            //  GlobTypeLoaderFactory.create(SumData.class).load();
+            from = typeBuilder.declareGlobArrayField("from", () -> FromType.TYPE);
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -64,13 +61,10 @@ public class FieldMappingType {
 
         static {
             GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("OverrideData");
-            TYPE = typeBuilder.unCompleteType();
             name = typeBuilder.declareStringField("name");
-            inputField = typeBuilder.declareGlobArrayField("inputField", FromType.TYPE);
+            inputField = typeBuilder.declareGlobArrayField("inputField", () -> FromType.TYPE);
             additionalParams = typeBuilder.declareStringField("additionalParams", IsJsonContent.UNIQUE_GLOB);
-            typeBuilder.complete();
-
-//            GlobTypeLoaderFactory.create(OverrideData.class).load();
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -88,13 +82,11 @@ public class FieldMappingType {
 
         static {
             GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("FromType");
-            TYPE = typeBuilder.unCompleteType();
             from = typeBuilder.declareStringField("from");
             defaultValueIfEmpty = typeBuilder.declareStringField("defaultValueIfEmpty");
             toStringFormater = typeBuilder.declareStringField("toStringFormater");
-            formater = typeBuilder.declareGlobArrayField("formater", FormatType.TYPE);
-            typeBuilder.complete();
-//            GlobTypeLoaderFactory.create(FromType.class).load();
+            formater = typeBuilder.declareGlobArrayField("formater", () -> FormatType.TYPE);
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -109,11 +101,9 @@ public class FieldMappingType {
 
         static {
             GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("RenamedType");
-            TYPE = typeBuilder.unCompleteType();
-            from = typeBuilder.declareGlobField("from", FromType.TYPE);
+            from = typeBuilder.declareGlobField("from", () -> FromType.TYPE);
             renameTo = typeBuilder.declareStringField("renameTo");
-            typeBuilder.complete();
-//            GlobTypeLoaderFactory.create(RenamedType.class).load();
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -135,15 +125,13 @@ public class FieldMappingType {
 
         static {
             GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("Join");
-            TYPE = typeBuilder.unCompleteType();
-            from = typeBuilder.declareGlobArrayField("from", FromType.TYPE);
+            from = typeBuilder.declareGlobArrayField("from", () -> FromType.TYPE);
             separator = typeBuilder.declareStringField("separator");
             first = typeBuilder.declareStringField("first");
             addFirstIfEmpty = typeBuilder.declareBooleanField("addFirstIfEmpty");
             last = typeBuilder.declareStringField("last");
             addLastIfEmpty = typeBuilder.declareBooleanField("addLastIfEmpty");
-            typeBuilder.complete();
-//            GlobTypeLoaderFactory.create(JoinType.class).load();
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -159,12 +147,10 @@ public class FieldMappingType {
 
         static {
             GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("Template");
-            TYPE = typeBuilder.unCompleteType();
-            from = typeBuilder.declareGlobArrayField("from", RenamedType.TYPE);
+            from = typeBuilder.declareGlobArrayField("from", () -> RenamedType.TYPE);
             template = typeBuilder.declareStringField("template");
             noValueIfOnIsMissing = typeBuilder.declareBooleanField("noValueIfOnIsMissing");
-            typeBuilder.complete();
-//            GlobTypeLoaderFactory.create(TemplateType.class).load();
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -181,11 +167,9 @@ public class FieldMappingType {
 
         static {
             GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("FormatType");
-            TYPE = typeBuilder.unCompleteType();
             matcher = typeBuilder.declareStringField("matcher");
             result = typeBuilder.declareStringField("result");
-            typeBuilder.complete();
-//            GlobTypeLoaderFactory.create(FormatType.class).load();
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -208,15 +192,13 @@ public class FieldMappingType {
 
         static {
             GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("MappingData");
-            TYPE = typeBuilder.unCompleteType();
             mappingName = typeBuilder.declareStringField("mappingName");
-            from = typeBuilder.declareGlobField("from", FromType.TYPE);
+            from = typeBuilder.declareGlobField("from", () -> FromType.TYPE);
             copyValueIfNoMapping = typeBuilder.declareBooleanField("copyValueIfNoMapping");
             defaultValueNoMapping = typeBuilder.declareStringField("defaultValueNoMapping");
             defaultEmptyValue = typeBuilder.declareStringField("defaultEmptyValue");
-            mapping = typeBuilder.declareGlobArrayField("mapping", KeyValue.TYPE);
-            typeBuilder.complete();
-//            GlobTypeLoaderFactory.create(MappingData.class).load();
+            mapping = typeBuilder.declareGlobArrayField("mapping", () -> KeyValue.TYPE);
+            TYPE = typeBuilder.build();
         }
     }
 
@@ -233,11 +215,9 @@ public class FieldMappingType {
 
         static {
             GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("KeyValue");
-            TYPE = typeBuilder.unCompleteType();
             key = typeBuilder.declareStringField("key");
             value = typeBuilder.declareStringField("value");
-            typeBuilder.complete();
-//            GlobTypeLoaderFactory.create(KeyValue.class).load();
+            TYPE = typeBuilder.build();
         }
     }
 }

@@ -7,8 +7,10 @@ import org.globsframework.core.metamodel.annotations.InitUniqueKey;
 import org.globsframework.core.metamodel.fields.BooleanField;
 import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.metamodel.impl.DefaultGlobTypeBuilder;
+import org.globsframework.core.model.Glob;
 import org.globsframework.core.model.Key;
 import org.globsframework.core.model.KeyBuilder;
+import org.globsframework.core.model.MutableGlob;
 
 public class CsvHeader {
     public static final GlobType TYPE;
@@ -26,24 +28,28 @@ public class CsvHeader {
 
     static {
         GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("CsvHeader");
-        TYPE = typeBuilder.unCompleteType();
         name = typeBuilder.declareStringField("name");
         firstLineIsHeader = typeBuilder.declareBooleanField("firstLineIsHeader");
-        typeBuilder.complete();
+        typeBuilder.register(GlobCreateFromAnnotation.class, annotation -> getMutableGlob((CsvHeader_) annotation));
+        TYPE = typeBuilder.build();
         KEY = KeyBuilder.newEmptyKey(TYPE);
-        typeBuilder
-                .register(GlobCreateFromAnnotation.class, annotation -> TYPE.instantiate()
-                        .set(name, ((CsvHeader_) annotation).value())
-                        .set(firstLineIsHeader, ((CsvHeader_) annotation).firstLineIsHeader()));
+    }
 
+    private static MutableGlob getMutableGlob(CsvHeader_ annotation) {
+        return TYPE.instantiate()
+                .set(name, annotation.value())
+                .set(firstLineIsHeader, annotation.firstLineIsHeader());
+    }
 
-//        GlobTypeLoaderFactory.create(CsvHeader.class, "CsvHeader")
-//                .register(GlobCreateFromAnnotation.class, annotation -> TYPE.instantiate()
-//                                .set(name, ((CsvHeader_) annotation).value())
-//                                .set(firstLineIsHeader, ((CsvHeader_) annotation).firstLineIsHeader())
-//                        .set(noHeader, ((CsvHeader_) annotation).noHeader())
-//                        .set(header, ((CsvHeader_) annotation).header())
-//                )
-//                .load();
+    public static Glob create(String name) {
+        return TYPE.instantiate()
+                .set(CsvHeader.name, name)
+                .set(CsvHeader.firstLineIsHeader, false);
+    }
+
+    public static Glob create(String name, boolean firstLineIsHeader) {
+        return TYPE.instantiate()
+                .set(CsvHeader.name, name)
+                .set(CsvHeader.firstLineIsHeader, firstLineIsHeader);
     }
 }

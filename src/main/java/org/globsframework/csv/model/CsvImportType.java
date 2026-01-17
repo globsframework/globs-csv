@@ -17,10 +17,8 @@ public class CsvImportType {
 
     static {
         GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("CsvImport");
-        TYPE = typeBuilder.unCompleteType();
         separator = typeBuilder.declareStringField("separator");
-        fieldMapping = typeBuilder.declareGlobArrayField("fieldMapping", FieldMappingType.TYPE);
-        typeBuilder.complete();
-//        GlobTypeLoaderFactory.create(CsvImportType.class).load();
+        fieldMapping = typeBuilder.declareGlobArrayField("fieldMapping", () -> FieldMappingType.TYPE);
+        TYPE = typeBuilder.build();
     }
 }

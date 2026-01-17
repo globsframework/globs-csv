@@ -8,6 +8,7 @@ import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.metamodel.impl.DefaultGlobTypeBuilder;
 import org.globsframework.core.model.Key;
 import org.globsframework.core.model.KeyBuilder;
+import org.globsframework.core.model.MutableGlob;
 
 public class ExportBooleanFormat {
     public static final GlobType TYPE;
@@ -21,22 +22,18 @@ public class ExportBooleanFormat {
 
     static {
         GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("ExportBooleanFormat");
-        TYPE = typeBuilder.unCompleteType();
         TRUE_ = typeBuilder.declareStringField("true");
         FALSE_ = typeBuilder.declareStringField("false");
-        typeBuilder.register(GlobCreateFromAnnotation.class, annotation -> TYPE.instantiate()
-                .set(TRUE_, ((ExportBooleanFormat_) annotation).true_())
-                .set(FALSE_, ((ExportBooleanFormat_) annotation).false_())
-        );
-        typeBuilder.complete();
+        typeBuilder.register(GlobCreateFromAnnotation.class,
+                annotation -> getMutableGlob((ExportBooleanFormat_) annotation));
+        TYPE = typeBuilder.build();
 
         KEY = KeyBuilder.newEmptyKey(TYPE);
+    }
 
-//        GlobTypeLoaderFactory.create(ExportBooleanFormat.class, "ExportBooleanFormat")
-//                .register(GlobCreateFromAnnotation.class, annotation -> TYPE.instantiate()
-//                        .set(TRUE_, ((ExportBooleanFormat_) annotation).true_())
-//                        .set(FALSE_, ((ExportBooleanFormat_) annotation).false_())
-//                )
-//                .load();
+    private static MutableGlob getMutableGlob(ExportBooleanFormat_ annotation) {
+        return TYPE.instantiate()
+                .set(TRUE_, annotation.true_())
+                .set(FALSE_, annotation.false_());
     }
 }

@@ -1,12 +1,14 @@
 package org.globsframework.csv;
 
 import org.globsframework.core.metamodel.GlobType;
-import org.globsframework.core.metamodel.GlobTypeLoaderFactory;
+import org.globsframework.core.metamodel.GlobTypeBuilder;
+import org.globsframework.core.metamodel.GlobTypeBuilderFactory;
 import org.globsframework.core.metamodel.annotations.Target;
 import org.globsframework.core.metamodel.fields.GlobArrayField;
 import org.globsframework.core.metamodel.fields.GlobField;
 import org.globsframework.core.metamodel.fields.StringField;
 import org.globsframework.core.model.Glob;
+import org.globsframework.csv.annotation.CsvHeader;
 import org.globsframework.csv.annotation.CsvHeader_;
 import org.junit.Assert;
 import org.junit.Test;
@@ -111,7 +113,10 @@ public class MultiTypeTest {
         public static GlobArrayField typeB;
 
         static {
-            GlobTypeLoaderFactory.create(Root.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("Root");
+            typeA = builder.declareGlobField("typeA", () -> TypeA.TYPE, CsvHeader.create("TYPE_A"));
+            typeB = builder.declareGlobArrayField("typeB", () -> TypeB.TYPE, CsvHeader.create("TYPE_B"));
+            TYPE = builder.build();
         }
     }
 
@@ -123,7 +128,10 @@ public class MultiTypeTest {
         public static StringField val2;
 
         static {
-            GlobTypeLoaderFactory.create(TypeA.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("TypeA");
+            val1 = builder.declareStringField("val1");
+            val2 = builder.declareStringField("val2");
+            TYPE = builder.build();
         }
     }
 
@@ -135,7 +143,10 @@ public class MultiTypeTest {
         public static StringField val2;
 
         static {
-            GlobTypeLoaderFactory.create(TypeB.class).load();
+            GlobTypeBuilder builder = GlobTypeBuilderFactory.create("TypeB");
+            val1 = builder.declareStringField("val1");
+            val2 = builder.declareStringField("val2");
+            TYPE = builder.build();
         }
     }
 }
