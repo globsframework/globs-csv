@@ -70,12 +70,12 @@ public class MultiTypeFixSizeTest {
         @Target(TypeA.class)
         @CsvHeader_("TYPE_A")
         @ExportColumnSize_(6)
-        public static final GlobField typeA;
+        public static final GlobField<TypeA> typeA;
 
         @Target(TypeB.class)
         @CsvHeader_("TYPE_B")
         @ExportColumnSize_(6)
-        public static final GlobArrayField typeB;
+        public static final GlobArrayField<TypeB> typeB;
 
         static {
             GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("Root");

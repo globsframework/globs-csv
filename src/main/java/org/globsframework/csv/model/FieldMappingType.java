@@ -95,7 +95,7 @@ public class FieldMappingType {
         public static final GlobType TYPE;
 
         @Target(FromType.class)
-        public static final GlobField from;
+        public static final GlobField<FromType> from;
 
         public static final StringField renameTo; // par defaut identique a from
 
@@ -111,7 +111,7 @@ public class FieldMappingType {
         public static final GlobType TYPE;
 
         @Target(FromType.class)
-        public static final GlobArrayField from;
+        public static final GlobArrayField<FromType> from;
 
         public static final StringField separator;
 
@@ -179,7 +179,7 @@ public class FieldMappingType {
         public static final StringField mappingName;
 
         @Target(FromType.class)
-        public static final GlobField from;
+        public static final GlobField<FromType> from;
 
         public static final BooleanField copyValueIfNoMapping;
 
@@ -188,7 +188,7 @@ public class FieldMappingType {
         public static final StringField defaultEmptyValue;
 
         @Target(KeyValue.class)
-        public static final GlobArrayField mapping;
+        public static final GlobArrayField<KeyValue> mapping;
 
         static {
             GlobTypeBuilder typeBuilder = new DefaultGlobTypeBuilder("MappingData");

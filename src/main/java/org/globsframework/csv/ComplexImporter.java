@@ -38,7 +38,7 @@ public class ComplexImporter {
             if (field.getDataType().isPrimive()) {
                 builder.declare(field.getName(), field.getDataType(), field.streamAnnotations().collect(Collectors.toList()));
             } else if (field instanceof GlobArrayField) {
-                flat(builder, ((GlobArrayField) field).getTargetType());
+                flat(builder, ((GlobArrayField<?>) field).getTargetType());
             } else if (field instanceof GlobField) {
                 throw new RuntimeException("Not implemented");
                 //flat(builder, ((GlobField) field).getTargetType());
@@ -196,9 +196,9 @@ public class ComplexImporter {
                         fieldMapper.add(fromField, toField, convert);
                     }
                 } else if (toField instanceof GlobArrayField) {
-                    attrs.add(new Attr(toField, build(((GlobArrayField) toField).getTargetType(), from)));
+                    attrs.add(new Attr(toField, build(((GlobArrayField<?>) toField).getTargetType(), from)));
                 } else if (toField instanceof GlobField) {
-                    attrs.add(new Attr(toField, build(((GlobField) toField).getTargetType(), from)));
+                    attrs.add(new Attr(toField, build(((GlobField<?>) toField).getTargetType(), from)));
                 } else {
                     throw new RuntimeException("Not managed");
                 }
@@ -219,14 +219,14 @@ public class ComplexImporter {
             for (Attr attr : attrs) {
                 Glob glob = attr.state.onNewLine(line);
                 if (glob != null) {
-                    if (attr.array instanceof GlobArrayField arrayField) {
+                    if (attr.array instanceof GlobArrayField<?> arrayField) {
                         Glob[] d = current.getOrEmpty(arrayField);
                         d = Arrays.copyOf(d, d.length + 1);
                         d[d.length - 1] = glob;
                         current.set(arrayField, d);
                         hasChange = true;
                     } else {
-                        GlobField field = (GlobField) attr.array;
+                        GlobField<?> field = (GlobField<?>) attr.array;
                         current.set(field, glob);
                         hasChange = true;
                     }

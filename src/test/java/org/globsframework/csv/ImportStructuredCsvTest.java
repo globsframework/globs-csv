@@ -142,7 +142,7 @@ public class ImportStructuredCsvTest {
         public static StringField b;
 
         @Target(L4.class)
-        public static GlobField l4;
+        public static GlobField<L4> l4;
 
         static {
             GlobTypeBuilder builder = GlobTypeBuilderFactory.create("SimpleL1");

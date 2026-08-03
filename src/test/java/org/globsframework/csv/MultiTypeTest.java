@@ -106,11 +106,11 @@ public class MultiTypeTest {
 
         @Target(TypeA.class)
         @CsvHeader_("TYPE_A")
-        public static GlobField typeA;
+        public static GlobField<TypeA> typeA;
 
         @Target(TypeB.class)
         @CsvHeader_("TYPE_B")
-        public static GlobArrayField typeB;
+        public static GlobArrayField<TypeB> typeB;
 
         static {
             GlobTypeBuilder builder = GlobTypeBuilderFactory.create("Root");

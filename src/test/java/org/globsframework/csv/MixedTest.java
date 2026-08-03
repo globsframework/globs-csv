@@ -66,15 +66,15 @@ public class MixedTest {
 
         @CsvHeader_("H1")
         @Target(H1.class)
-        public static GlobField h1;
+        public static GlobField<H1> h1;
 
         @CsvHeader_(value = "H2", firstLineIsHeader = true)
         @Target(H2.class)
-        public static GlobArrayField h2;
+        public static GlobArrayField<H2> h2;
 
         @CsvHeader_("H3")
         @Target(H3.class)
-        public static GlobField h3;
+        public static GlobField<H3> h3;
 
         static {
             GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("Root");
@@ -142,15 +142,15 @@ public class MixedTest {
 
         @CsvHeader_("CCM")
         @Target(CCMLineType.class)
-        public static GlobField order;
+        public static GlobField<CCMLineType> order;
 
         @CsvHeader_("CCL")
         @Target(CCLLineType.class)
-        public static GlobArrayField items;
+        public static GlobArrayField<CCLLineType> items;
 
         @CsvHeader_("ADR")
         @Target(ADRLineType.class)
-        public static GlobArrayField addresses;
+        public static GlobArrayField<ADRLineType> addresses;
 
         static {
             GlobTypeBuilder typeBuilder = GlobTypeBuilderFactory.create("CCMOrderType");

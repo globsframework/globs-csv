@@ -489,10 +489,10 @@ public class ImportFile {
                         f -> f.getAnnotation(CsvHeader.KEY).get(CsvHeader.name)
                         , f -> {
                             final Integer markerSize = f.getAnnotation(ExportColumnSize.KEY).getNotNull(ExportColumnSize.SIZE);
-                            if (f instanceof GlobField) {
-                                return new TypedLine(((GlobField) f).getTargetType(), markerSize);
-                            } else if (f instanceof GlobArrayField) {
-                                return new TypedLine(((GlobArrayField) f).getTargetType(), markerSize);
+                            if (f instanceof GlobField<?> globField) {
+                                return new TypedLine(globField.getTargetType(), markerSize);
+                            } else if (f instanceof GlobArrayField<?> globArrayField) {
+                                return new TypedLine(globArrayField.getTargetType(), markerSize);
                             } else {
                                 throw new RuntimeException("Expecting a GlobField or a GlobArrayField");
                             }
@@ -1276,12 +1276,12 @@ public class ImportFile {
                 for (Field field : fields) {
                     Glob annotation = field.findAnnotation(CsvHeader.KEY);
                     if (annotation != null) {
-                        if (field instanceof GlobField) {
+                        if (field instanceof GlobField<?> globField) {
                             lines.add(new SingleUpdateLine(field, annotation));
-                            maxFieldCount = Math.max(maxFieldCount, ((GlobField) field).getTargetType().getFieldCount() + 1);
-                        } else if (field instanceof GlobArrayField) {
+                            maxFieldCount = Math.max(maxFieldCount, globField.getTargetType().getFieldCount() + 1);
+                        } else if (field instanceof GlobArrayField<?> globArrayField) {
                             lines.add(new MultiLineUpdateLine(field, annotation));
-                            maxFieldCount = Math.max(maxFieldCount, ((GlobArrayField) field).getTargetType().getFieldCount() + 1);
+                            maxFieldCount = Math.max(maxFieldCount, globArrayField.getTargetType().getFieldCount() + 1);
                         }
                     }
                 }
@@ -1360,7 +1360,7 @@ public class ImportFile {
             public SingleUpdateLine(Field field, Glob csvHeader) {
                 this.field = field;
                 this.csvHeader = csvHeader;
-                targetType = ((GlobField) field).getTargetType();
+                targetType = ((GlobField<?>) field).getTargetType();
                 csvHeaderTrue = csvHeader.isTrue(CsvHeader.firstLineIsHeader);
             }
 
@@ -1392,7 +1392,7 @@ public class ImportFile {
             public boolean updateAndReset(MutableGlob to) {
                 isFirst = true;
                 if (got != null) {
-                    to.set(((GlobField) field), got);
+                    to.set(((GlobField<?>) field), got);
                     got = null;
                     return true;
                 } else {

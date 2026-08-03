@@ -133,7 +133,7 @@
         <dependency>
             <groupId>org.globsframework</groupId>
             <artifactId>globs</artifactId>
-            <version>5.3-SNAPSHOT</version>
+            <version>5.9.0</version>
         </dependency>
         <dependency>
             <groupId>org.globsframework</groupId>

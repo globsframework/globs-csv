@@ -81,7 +81,7 @@ public class ExportBySize {
                 String header = field.getAnnotation(CsvHeader.KEY).get(CsvHeader.name);
                 if (field instanceof GlobArrayField) {
                     consumers.add(glob -> {
-                        Glob[] orEmpty = glob.getOrEmpty((GlobArrayField) field);
+                        Glob[] orEmpty = glob.getOrEmpty((GlobArrayField<?>) field);
                         for (Glob glob1 : orEmpty) {
                             exportGlob.add(lineWriter, header, false);
                             exportGlob.accept(glob1, lineWriter);
@@ -90,7 +90,7 @@ public class ExportBySize {
                 } else if (field instanceof GlobField) {
                     consumers.add(glob -> {
                         exportGlob.add(lineWriter, header, false);
-                        exportGlob.accept(glob.get((GlobField) field), lineWriter);
+                        exportGlob.accept(glob.get((GlobField<?>) field), lineWriter);
                     });
                 }
             }
