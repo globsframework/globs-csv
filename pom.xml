@@ -133,12 +133,12 @@
         <dependency>
             <groupId>org.globsframework</groupId>
             <artifactId>globs</artifactId>
-            <version>5.13-SNAPSHOT</version>
+            <version>5.13.0</version>
         </dependency>
         <dependency>
             <groupId>org.globsframework</groupId>
             <artifactId>globs-gson</artifactId>
-            <version>5.4-SNAPSHOT</version>
+            <version>5.4.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -155,33 +155,33 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>5.4.1</version>
+            <version>5.5.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>5.4.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.25.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.25.3</version>
-            <scope>test</scope>
+            <version>5.5.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.globsframework</groupId>
             <artifactId>globs-xml</artifactId>
-            <version>5.0.0</version>
+            <version>5.3.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.26.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.26.1</version>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
